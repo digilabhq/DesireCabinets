@@ -1,0 +1,22 @@
+{
+  "name": "DesireCabinets - Closet Estimator",
+  "short_name": "DesireCabinets",
+  "description": "Professional closet estimator for Desire Cabinets LLC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#B8860B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
