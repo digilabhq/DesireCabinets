@@ -16,6 +16,7 @@ class ClosetEstimatorApp {
         this.renderRoomTabs();
         
         // Render all UI components
+        this.renderClosetTypeSelector();
         this.renderDepthSelector();
         this.renderMaterialSelector();
         this.renderHardwareSelector();
@@ -64,6 +65,22 @@ class ClosetEstimatorApp {
                        ${currentRoom.closet.depth === depth ? 'checked' : ''}>
                 <div class="depth-label">${depth}"</div>
             </div>
+        `).join('');
+    }
+
+    renderClosetTypeSelector() {
+        const container = document.getElementById('closetTypeSelector');
+        const currentRoom = this.calculator.getCurrentRoom();
+        const types = [
+            { id: 'walk-in', name: 'Walk-In' },
+            { id: 'reach-in', name: 'Reach-In' }
+        ];
+        
+        container.innerHTML = types.map(type => `
+            <button class="selection-btn ${currentRoom.closet.closetType === type.id ? 'selected' : ''}" 
+                 onclick="app.selectClosetType('${type.id}')">
+                ${type.name}
+            </button>
         `).join('');
     }
 
@@ -144,6 +161,11 @@ class ClosetEstimatorApp {
         document.getElementById('linearFeet').value = currentRoom.closet.linearFeet || 0;
         document.getElementById('height').value = currentRoom.closet.height || 96;
         
+        // Tax and discount
+        document.getElementById('taxRate').value = estimate.taxRate || 0;
+        document.getElementById('discountType').value = estimate.discountType || 'percent';
+        document.getElementById('discountValue').value = estimate.discountValue || 0;
+        
         // Notes
         document.getElementById('projectNotes').value = estimate.notes || '';
     }
@@ -174,6 +196,7 @@ class ClosetEstimatorApp {
         
         // Re-render all selectors for new room
         this.renderRoomTabs();
+        this.renderClosetTypeSelector();
         this.renderDepthSelector();
         this.renderMaterialSelector();
         this.renderHardwareSelector();
@@ -181,6 +204,12 @@ class ClosetEstimatorApp {
         this.renderAddonList();
         this.loadFormValues();
         this.calculate();
+    }
+
+    selectClosetType(type) {
+        this.calculator.updateCloset('closetType', type);
+        this.renderClosetTypeSelector();
+        this.save();
     }
 
     selectDepth(depth) {
@@ -246,12 +275,28 @@ class ClosetEstimatorApp {
         this.save();
     }
 
+    updateTax(rate) {
+        this.calculator.updateTaxRate(rate);
+        this.calculate();
+    }
+
+    updateDiscountType(type) {
+        const value = parseFloat(document.getElementById('discountValue').value) || 0;
+        this.calculator.updateDiscount(type, value);
+        this.calculate();
+    }
+
+    updateDiscountValue(value) {
+        const type = document.getElementById('discountType').value;
+        this.calculator.updateDiscount(type, value);
+        this.calculate();
+    }
+
     calculate() {
         const calculations = this.calculator.calculateTotal();
         
         // Update summary display
         document.getElementById('summaryBase').textContent = `$${calculations.base.toFixed(2)}`;
-        document.getElementById('summaryTotal').textContent = `$${calculations.total.toFixed(2)}`;
         
         // Show/hide material upcharge line
         const materialLine = document.getElementById('materialUpchargeLine');
@@ -275,11 +320,43 @@ class ClosetEstimatorApp {
             addonsLine.style.display = 'none';
         }
 
+        // Update total (now includes tax and discount)
+        document.getElementById('summaryTotal').textContent = `$${calculations.total.toFixed(2)}`;
+
         // Update room count display
         const roomCount = this.calculator.getRooms().length;
         document.getElementById('roomCount').textContent = roomCount > 1 ? `${roomCount} Rooms` : '1 Room';
         
+        // Render room breakdown
+        this.renderRoomBreakdown(calculations);
+        
         this.save();
+    }
+
+    renderRoomBreakdown(calculations) {
+        const container = document.getElementById('roomBreakdownList');
+        const rooms = this.calculator.getRooms();
+        
+        if (rooms.length === 1) {
+            container.innerHTML = '';
+            document.getElementById('roomBreakdown').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('roomBreakdown').style.display = 'block';
+        
+        container.innerHTML = rooms.map((room, index) => {
+            const roomCalc = calculations.rooms[index];
+            const roomName = room.name || `Room ${index + 1}`;
+            const roomLF = room.closet.linearFeet;
+            
+            return `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span>${roomName} <span style="opacity: 0.6;">(${roomLF} LF)</span></span>
+                    <span style="color: var(--gold); font-weight: 600;">$${roomCalc.total.toFixed(2)}</span>
+                </div>
+            `;
+        }).join('');
     }
 
     save() {

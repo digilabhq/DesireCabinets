@@ -13,6 +13,9 @@ class ClosetCalculator {
             rooms: [
                 this.createNewRoom()  // Start with one room
             ],
+            taxRate: 0,  // Tax rate as percentage (e.g., 7.5 for 7.5%)
+            discountType: 'percent',  // 'percent' or 'dollar'
+            discountValue: 0,  // Discount amount
             notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
@@ -24,6 +27,7 @@ class ClosetCalculator {
         return {
             name: '',  // e.g., "Master Bedroom", "Walk-in Closet", etc.
             closet: {
+                closetType: 'walk-in',  // 'walk-in' or 'reach-in'
                 linearFeet: 0,
                 depth: 16,
                 height: 96,
@@ -141,13 +145,34 @@ class ClosetCalculator {
             return roomCalc;
         });
 
+        const subtotal = totalBase + totalMaterialUpcharge + totalAddons;
+        
+        // Calculate discount
+        let discountAmount = 0;
+        if (this.estimate.discountValue > 0) {
+            if (this.estimate.discountType === 'percent') {
+                discountAmount = subtotal * (this.estimate.discountValue / 100);
+            } else {
+                discountAmount = this.estimate.discountValue;
+            }
+        }
+        
+        const afterDiscount = subtotal - discountAmount;
+        
+        // Calculate tax
+        const taxAmount = afterDiscount * (this.estimate.taxRate / 100);
+        
+        const total = afterDiscount + taxAmount;
+
         return {
             base: totalBase,
             materialUpcharge: totalMaterialUpcharge,
             addons: totalAddons,
-            subtotal: totalBase + totalMaterialUpcharge + totalAddons,
-            tax: 0,
-            total: totalBase + totalMaterialUpcharge + totalAddons,
+            subtotal: subtotal,
+            discount: discountAmount,
+            afterDiscount: afterDiscount,
+            tax: taxAmount,
+            total: total,
             rooms: roomTotals
         };
     }
@@ -172,23 +197,28 @@ class ClosetCalculator {
 
     // Generate description for a specific room
     generateRoomDescription(room) {
-        const { linearFeet, depth, height, material, hardwareFinish, mounting } = room.closet;
+        const { closetType, linearFeet, depth, height, material, hardwareFinish, mounting } = room.closet;
         const materialName = PRICING_CONFIG.materials.find(m => m.id === material)?.name || 'White';
         const hardwareName = PRICING_CONFIG.hardwareFinishes.find(h => h.id === hardwareFinish)?.name || 'Black';
         const mountingName = PRICING_CONFIG.mounting.find(m => m.id === mounting)?.name || 'Floor Mounted';
+        const closetTypeName = closetType === 'walk-in' ? 'Walk-In' : 'Reach-In';
         
         const activeAddons = this.getActiveAddons(room);
-        const hasLEDs = activeAddons.some(a => a.key === 'colorChangingLEDs');
 
-        let description = `${room.name ? room.name + ' - ' : ''}Walk-In Closet - ${mountingName.toLowerCase()} (~${linearFeet} LF x ${depth}"D x ${height}"H. 3/4" ${materialName} melamine frameless cabinets, plain doors/drawers, ${hardwareName} exposed hardware, full extension drawer slides`;
+        // Room name with closet type
+        let description = `${room.name ? room.name + ' - ' : ''}${closetTypeName} Closet`;
         
-        if (hasLEDs) {
-            description += ', LED lighting';
-        }
-        
-        description += '. Delivery & installation included).';
-        
-        return description;
+        return {
+            title: description,
+            details: [
+                `${linearFeet} linear feet × ${depth}" depth`,
+                `${materialName} melamine finish`,
+                `${hardwareName} hardware`,
+                `${mountingName}`,
+                ...activeAddons.map(addon => `${addon.name} (${addon.quantity} ${addon.unit})`),
+                'Installation included'
+            ]
+        };
     }
 
     // Update client info
@@ -216,6 +246,17 @@ class ClosetCalculator {
         this.estimate.notes = notes;
     }
 
+    // Update tax rate
+    updateTaxRate(rate) {
+        this.estimate.taxRate = parseFloat(rate) || 0;
+    }
+
+    // Update discount
+    updateDiscount(type, value) {
+        this.estimate.discountType = type;
+        this.estimate.discountValue = parseFloat(value) || 0;
+    }
+
     // Get current estimate data
     getEstimate() {
         return {
@@ -231,6 +272,9 @@ class ClosetCalculator {
         this.estimate = {
             client: { name: '', address: '', phone: '', email: '' },
             rooms: [this.createNewRoom()],
+            taxRate: 0,
+            discountType: 'percent',
+            discountValue: 0,
             notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]

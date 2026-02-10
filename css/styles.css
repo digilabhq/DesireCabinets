@@ -261,6 +261,13 @@ textarea {
     gap: 12px;
 }
 
+/* Selection Grid (for 2-column layouts like closet type) */
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
 .selection-btn {
     border: 2px solid var(--border);
     border-radius: 6px;
@@ -450,13 +457,16 @@ textarea {
 
 .quote-info-label {
     font-weight: 500;
-    color: #666;
+    color: #888;
     font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .quote-info-value {
     font-weight: 600;
     color: var(--dark-gray);
+    font-size: 15px;
 }
 
 /* Responsive */
