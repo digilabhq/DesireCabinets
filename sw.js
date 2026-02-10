@@ -1,10 +1,11 @@
 // Service Worker for Desire Cabinets Estimator PWA
 
-const CACHE_NAME = 'desire-estimator-v8-consistent-padding';
+const CACHE_NAME = 'desire-estimator-v9-pin-auth';
 const urlsToCache = [
   '/',
   '/index.html',
   '/css/styles.css',
+  '/js/auth.js',
   '/js/config.js',
   '/js/calculator.js',
   '/js/report.js',
