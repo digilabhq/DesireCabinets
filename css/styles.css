@@ -465,7 +465,7 @@ textarea {
 
 .quote-info-value {
     font-weight: 600;
-    color: var(--dark-gray);
+    color: var(--white);
     font-size: 15px;
 }
 
