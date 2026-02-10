@@ -254,6 +254,13 @@ class ClosetEstimatorApp {
 
     updateClient(field, value) {
         this.calculator.updateClient(field, value);
+        
+        // Regenerate quote number when client name changes
+        if (field === 'name') {
+            this.calculator.estimate.quoteNumber = this.calculator.generateQuoteNumber(value);
+            this.updateQuoteInfo();
+        }
+        
         this.save();
     }
 

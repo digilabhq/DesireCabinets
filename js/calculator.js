@@ -40,8 +40,8 @@ class ClosetCalculator {
         };
     }
 
-    generateQuoteNumber() {
-        // Shorter format: YYMMDD-HHMM (e.g., 260210-1430)
+    generateQuoteNumber(clientName = '') {
+        // Format: YYMMDD-HHMM-INITIALS (e.g., 260210-1430-RP)
         const now = new Date();
         const yy = String(now.getFullYear()).slice(-2);
         const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -49,7 +49,18 @@ class ClosetCalculator {
         const hh = String(now.getHours()).padStart(2, '0');
         const min = String(now.getMinutes()).padStart(2, '0');
         
-        return `${yy}${mm}${dd}-${hh}${min}`;
+        let quoteNum = `${yy}${mm}${dd}-${hh}${min}`;
+        
+        // Add initials if client name provided
+        if (clientName && clientName.trim()) {
+            const nameParts = clientName.trim().split(' ').filter(p => p.length > 0);
+            const initials = nameParts.map(p => p[0].toUpperCase()).join('');
+            if (initials) {
+                quoteNum += `-${initials}`;
+            }
+        }
+        
+        return quoteNum;
     }
 
     // Get current room being edited
@@ -206,9 +217,9 @@ class ClosetCalculator {
         // Room name with closet type (no "Closet" word)
         let title = room.name ? `${room.name} - ${closetTypeName}` : closetTypeName;
         
-        // Build details array
+        // Build details array - using "deep" and "high"
         let details = [
-            `${linearFeet} linear feet × ${depth}" depth × ${height}" height`,
+            `${linearFeet} linear feet × ${depth}" deep × ${height}" high`,
             `3/4" ${materialName} melamine finish`,
             `${hardwareName} hardware (Pulls & Rod)`,
             ...activeAddons.map(addon => {

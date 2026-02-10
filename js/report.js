@@ -12,58 +12,53 @@ class ReportGenerator {
         const estimate = this.calculator.getEstimate();
         const calculations = estimate.calculations;
 
-        // Logo Colors - More Gold!
-        const gold = [184, 134, 11];
-        const black = [0, 0, 0];
-        const lightGold = [218, 165, 32];
-        const darkGray = [60, 60, 60];
+        // Colors - Updated to match logo
+        const gold = [171, 137, 0];  // #AB8900
+        const black = [0, 0, 0];     // #000000
         const lightGray = [140, 140, 140];
         
         let y = 15;
 
-        // Header with bigger logo (not stretched)
+        // Header with 50% BIGGER logo
         try {
             const logoImg = document.getElementById('logo-img');
             if (logoImg && logoImg.complete) {
-                doc.addImage(logoImg, 'JPEG', 15, y, 55, 14);  // Bigger, proper ratio
+                doc.addImage(logoImg, 'JPEG', 15, y, 82, 21);
             }
         } catch (e) {
             console.log('Logo not added to PDF');
         }
 
-        // "QUOTE" title - 50% smaller, gold color
-        doc.setFontSize(14);
+        // "QUOTE" title - small, BLACK
+        doc.setFontSize(7);
         doc.setFont(undefined, 'bold');
-        doc.setTextColor(...gold);
+        doc.setTextColor(...black);  // BLACK
         doc.text('QUOTE', 195, y + 10, { align: 'right' });
 
-        y += 20;
+        y += 26;
 
-        // Quote # and Date - aligned with BILL TO
-        doc.setFillColor(250, 250, 250);
-        doc.rect(145, y, 50, 14, 'F');
-        
+        // Quote # and Date - NO GRAY BOX, wider area for longer format
         doc.setFontSize(8);
         doc.setFont(undefined, 'bold');
-        doc.setTextColor(...darkGray);
-        doc.text('QUOTE #', 148, y + 5);
-        doc.text('DATE', 148, y + 10);
+        doc.setTextColor(...black);
+        doc.text('QUOTE #', 135, y + 5);  // Moved left for more space
+        doc.text('DATE', 135, y + 10);
         
         doc.setFont(undefined, 'normal');
-        doc.setTextColor(...gold);  // Gold color for values
+        doc.setTextColor(...black);
         const quoteNum = estimate.revision > 0 ? `${estimate.quoteNumber} (Rev. ${estimate.revision})` : estimate.quoteNumber;
-        doc.text(quoteNum, 188, y + 5, { align: 'right' });
-        doc.text(new Date(estimate.date).toLocaleDateString(), 188, y + 10, { align: 'right' });
+        doc.text(quoteNum, 193, y + 5, { align: 'right' });  // More space for longer quote #
+        doc.text(new Date(estimate.date).toLocaleDateString(), 193, y + 10, { align: 'right' });
 
-        // Bill To section - aligned at same y position
+        // Bill To section - aligned
         doc.setFont(undefined, 'bold');
         doc.setFontSize(9);
-        doc.setTextColor(...gold);  // Gold for "BILL TO:"
+        doc.setTextColor(...black);
         doc.text('BILL TO:', 15, y + 5);
         
         doc.setFont(undefined, 'normal');
         doc.setFontSize(9);
-        doc.setTextColor(...darkGray);
+        doc.setTextColor(...black);
         y += 9;
         if (estimate.client.name) {
             doc.text(estimate.client.name, 15, y);
@@ -84,17 +79,17 @@ class ReportGenerator {
 
         y += 8;
 
-        // Table Header - gold color
+        // Table Header - BLACK BOLD
         doc.setFontSize(7);
         doc.setFont(undefined, 'bold');
-        doc.setTextColor(...gold);  // Gold headers
+        doc.setTextColor(...black);
         doc.text('ITEM DESCRIPTION', 15, y);
         doc.text('QTY', 130, y, { align: 'right' });
         doc.text('UNIT PRICE', 160, y, { align: 'right' });
         doc.text('AMOUNT', 195, y, { align: 'right' });
         
         y += 1;
-        doc.setDrawColor(...gold);  // Gold line
+        doc.setDrawColor(...gold);  // GOLD line
         doc.setLineWidth(0.5);
         doc.line(15, y, 195, y);
         
@@ -103,21 +98,21 @@ class ReportGenerator {
         // Loop through rooms
         doc.setFont(undefined, 'normal');
         doc.setFontSize(9);
-        doc.setTextColor(...darkGray);
+        doc.setTextColor(...black);
         
         estimate.rooms.forEach((room, index) => {
             const roomCalc = calculations.rooms[index];
             const description = this.calculator.generateRoomDescription(room);
             
-            // Room title - gold color
+            // Room title - BLACK BOLD
             doc.setFont(undefined, 'bold');
-            doc.setTextColor(...gold);
+            doc.setTextColor(...black);
             doc.text(description.title, 15, y);
             
-            // Details as bullets
+            // Details as bullets - BLACK
             doc.setFont(undefined, 'normal');
             doc.setFontSize(8);
-            doc.setTextColor(...darkGray);
+            doc.setTextColor(...black);
             
             y += 3.5;
             description.details.forEach(detail => {
@@ -129,11 +124,11 @@ class ReportGenerator {
                 y += 3.5;
             });
             
-            // Add ROOM notes if present
+            // Room notes - BLACK italic
             if (room.notes && room.notes.trim()) {
                 doc.setFont(undefined, 'italic');
                 doc.setFontSize(8);
-                doc.setTextColor(...lightGray);
+                doc.setTextColor(...black);  // BLACK instead of light gray
                 const notes = doc.splitTextToSize(`Note: ${room.notes}`, 115);
                 notes.forEach(line => {
                     if (y > 260) {
@@ -144,19 +139,19 @@ class ReportGenerator {
                     y += 3.5;
                 });
                 doc.setFont(undefined, 'normal');
-                doc.setTextColor(...darkGray);
             }
             
-            // Price columns
+            // Price columns - BLACK for unit price, GOLD for amount
             const noteLines = room.notes ? Math.ceil(room.notes.length / 60) : 0;
             const priceY = y - (3.5 * (description.details.length + noteLines)) - 3.5;
             doc.setFontSize(9);
+            doc.setTextColor(...black);
             doc.text('1', 130, priceY + 3.5, { align: 'right' });
             doc.text(`$${roomCalc.total.toFixed(2)}`, 160, priceY + 3.5, { align: 'right' });
             doc.setFont(undefined, 'bold');
-            doc.setTextColor(...gold);  // Gold for amount
+            doc.setTextColor(...gold);  // GOLD for amount
             doc.text(`$${roomCalc.total.toFixed(2)}`, 195, priceY + 3.5, { align: 'right' });
-            doc.setTextColor(...darkGray);
+            doc.setTextColor(...black);
             doc.setFont(undefined, 'normal');
             
             y += 5;
@@ -169,22 +164,23 @@ class ReportGenerator {
 
         y += 3;
 
-        // Thank you message
+        // Thank you message - GOLD
         doc.setFont(undefined, 'italic');
         doc.setFontSize(9);
-        doc.setTextColor(...lightGray);
+        doc.setTextColor(...gold);
         doc.text('Thank you for your business!', 15, y);
         y += 8;
 
-        // Totals
+        // Totals - BLACK
         doc.setFont(undefined, 'normal');
         doc.setFontSize(9);
-        doc.setTextColor(...darkGray);
+        doc.setTextColor(...black);
         
         doc.text('SUBTOTAL', 130, y);
         doc.text(`$${calculations.subtotal.toFixed(2)}`, 195, y, { align: 'right' });
         y += 5;
 
+        // Discount - GOLD
         if (calculations.discount > 0) {
             const discountLabel = estimate.discountType === 'percent' 
                 ? `DISCOUNT (${estimate.discountValue}%)`
@@ -192,11 +188,13 @@ class ReportGenerator {
             doc.setTextColor(...gold);
             doc.text(discountLabel, 130, y);
             doc.text(`-$${calculations.discount.toFixed(2)}`, 195, y, { align: 'right' });
-            doc.setTextColor(...darkGray);
+            doc.setTextColor(...black);
             y += 5;
         }
 
+        // Tax - BLACK
         if (estimate.taxRate > 0) {
+            doc.setTextColor(...black);
             doc.text(`TAX (${estimate.taxRate}%)`, 130, y);
             doc.text(`$${calculations.tax.toFixed(2)}`, 195, y, { align: 'right' });
             y += 6;
@@ -204,7 +202,7 @@ class ReportGenerator {
             y += 2;
         }
 
-        // Total line - gold
+        // Total line - GOLD
         doc.setDrawColor(...gold);
         doc.setLineWidth(0.5);
         doc.line(130, y, 195, y);
@@ -212,23 +210,24 @@ class ReportGenerator {
 
         doc.setFont(undefined, 'bold');
         doc.setFontSize(13);
-        doc.setTextColor(...darkGray);
+        doc.setTextColor(...black);
         doc.text('TOTAL', 130, y);
-        doc.setTextColor(...gold);
+        doc.setTextColor(...gold);  // GOLD for total amount
         doc.text(`$${calculations.total.toFixed(2)}`, 195, y, { align: 'right' });
 
         y += 10;
 
-        // Terms
+        // Terms - BLACK
         doc.setFont(undefined, 'normal');
         doc.setFontSize(8);
-        doc.setTextColor(...lightGray);
+        doc.setTextColor(...black);
         doc.text('Terms: 50% deposit required. Balance due upon completion. Valid for 30 days.', 15, y);
 
-        // Bottom contact
+        // Bottom contact - BLACK
         const pageHeight = doc.internal.pageSize.height;
         y = pageHeight - 12;
         doc.setFontSize(7);
+        doc.setTextColor(...black);
         doc.text('If you have any questions, please contact', 105, y, { align: 'center' });
         y += 3;
         doc.text('Rangel Pineda  •  678-709-3790  •  rangelp@desirecabinets.com', 105, y, { align: 'center' });
