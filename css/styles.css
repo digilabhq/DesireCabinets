@@ -63,8 +63,8 @@ body {
 .room-tabs-container {
     background: var(--white);
     border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 15px;
+    padding: 8px;
+    margin-bottom: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -143,16 +143,16 @@ body {
 .card {
     background: var(--white);
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
+    padding: 8px;
+    margin-bottom: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .card-header {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
     border-bottom: 2px solid var(--gold);
 }
 
@@ -166,11 +166,11 @@ body {
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmin(250px, 1fr));
-    gap: 12px;
+    gap: 8px;
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .form-group label {
@@ -212,15 +212,15 @@ textarea {
 .depth-selector {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .depth-option {
     position: relative;
     border: 2px solid var(--border);
     border-radius: 8px;
-    padding: 20px;
+    padding: 12px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
@@ -229,12 +229,12 @@ textarea {
 .depth-option:hover {
     border-color: var(--gold);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.15);
+    box-shadow: 0 4px 12px rgba(171, 137, 0, 0.15);
 }
 
 .depth-option.selected {
     border-color: var(--gold);
-    background: rgba(184, 134, 11, 0.05);
+    background: rgba(171, 137, 0, 0.05);
 }
 
 .depth-option input[type="radio"] {
@@ -243,10 +243,10 @@ textarea {
 }
 
 .depth-label {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--dark-gray);
-    margin-bottom: 5px;
+    margin-bottom: 0;
 }
 
 .depth-price {
@@ -266,7 +266,7 @@ textarea {
 .selection-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
 }
 
 .selection-btn {
@@ -295,15 +295,15 @@ textarea {
 .addon-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .addon-item {
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
-    gap: 12px;
-    padding: 15px;
+    gap: 8px;
+    padding: 8px;
     border: 1px solid var(--border);
     border-radius: 6px;
     background: var(--white);
@@ -354,13 +354,13 @@ textarea {
     background: var(--dark-gray);
     color: var(--white);
     border-radius: 8px;
-    padding: 15px;
+    padding: 8px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
 .summary-card h2 {
     color: var(--white);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 18px;
 }
 
@@ -432,8 +432,8 @@ textarea {
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 20px;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 .action-buttons .btn {
@@ -441,16 +441,20 @@ textarea {
     justify-content: center;
 }
 
-/* Quote Info */
+/* Quote Info - 2 row layout for better spacing */
 .quote-info {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    padding: 15px;
-    background: rgba(184, 134, 11, 0.05);
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(171, 137, 0, 0.05);
     border-radius: 6px;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     font-size: 14px;
+}
+
+.quote-info-item:first-child {
+    grid-column: 1 / -1; /* Quote # spans full width */
 }
 
 .quote-info-item {
@@ -474,19 +478,30 @@ textarea {
 
 /* Responsive */
 @media (max-width: 768px) {
-    /* Header */
+    /* Header - logo alone, button below gold line */
+    .app-header {
+        position: relative;
+        padding-bottom: 50px; /* Space for button below line */
+    }
+
     .header-content {
         flex-direction: column;
-        gap: 10px;
+        gap: 0;
         padding: 15px;
+        padding-bottom: 0;
     }
 
     .logo-container {
         max-width: 200px;
+        margin: 0 auto; /* Center logo */
     }
 
     .header-actions {
-        width: 100%;
+        position: absolute;
+        bottom: 8px;
+        left: 15px;
+        right: 15px;
+        width: auto;
     }
 
     .btn-secondary {
