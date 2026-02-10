@@ -53,17 +53,17 @@ const PRICING_CONFIG = {
     // Material options - White is base ($0), others have upcharge
     materials: [
         { id: "white", name: "White", upcharge: 0 },
-        { id: "pewter-pine", name: "Pewter Pine", upcharge: 10 },
-        { id: "gray", name: "Gray", upcharge: 10 },
-        { id: "sable-glow", name: "Sable Glow", upcharge: 10 },
-        { id: "umbria-elme", name: "Umbria Elme", upcharge: 10 },
-        { id: "coastland-oak", name: "Coastland Oak", upcharge: 10 },
-        { id: "spring-blossom", name: "Spring Blossom", upcharge: 10 },
-        { id: "black", name: "Black", upcharge: 10 },
-        { id: "regal-cherry", name: "Regal Cherry", upcharge: 10 },
-        { id: "maple", name: "Maple", upcharge: 10 },
-        { id: "natural-oak", name: "Natural Oak", upcharge: 10 },
-        { id: "moscato-elme", name: "Moscato Elme", upcharge: 10 }
+        { id: "pewter-pine", name: "Pewter Pine", upcharge: 29 },
+        { id: "gray", name: "Gray", upcharge: 8 },
+        { id: "sable-glow", name: "Sable Glow", upcharge: 19 },
+        { id: "umbria-elme", name: "Umbria Elme", upcharge: 17 },
+        { id: "coastland-oak", name: "Coastland Oak", upcharge: 21 },
+        { id: "spring-blossom", name: "Spring Blossom", upcharge: 34 },
+        { id: "black", name: "Black", upcharge: 0 },
+        { id: "regal-cherry", name: "Regal Cherry", upcharge: 16 },
+        { id: "maple", name: "Maple", upcharge: 9 },
+        { id: "natural-oak", name: "Natural Oak", upcharge: 19 },
+        { id: "moscato-elme", name: "Moscato Elme", upcharge: 15 }
     ],
 
     // Mounting type (standard is floor)
