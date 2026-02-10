@@ -277,6 +277,8 @@ textarea {
     transition: all 0.2s;
     text-align: center;
     background: var(--white);
+    color: var(--black);
+    font-weight: 500;
 }
 
 .selection-btn:hover {
@@ -617,36 +619,67 @@ textarea {
         font-size: 13px;
     }
 
-    /* Add-ons - more compact */
+    /* Add-ons - 2-line layout on mobile */
     .addon-item {
-        grid-template-columns: auto 1fr auto auto;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
         padding: 8px;
-        gap: 6px;
+        gap: 4px;
         font-size: 12px;
+        align-items: center;
     }
 
+    /* Line 1: checkbox spans row 1 */
+    .addon-item input[type="checkbox"] {
+        grid-column: 1;
+        grid-row: 1 / 3;
+        align-self: start;
+        margin-top: 2px;
+    }
+
+    /* Line 1: name + price/unit on right */
     .addon-details {
+        grid-column: 2;
+        grid-row: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
         min-width: 0;
     }
 
     .addon-name {
         font-size: 12px;
+        font-weight: 500;
+        flex: 1;
     }
 
     .addon-unit {
         font-size: 10px;
+        color: #666;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
+    /* Line 2: quantity input and total */
     .addon-quantity {
-        width: 45px;
+        grid-column: 2;
+        grid-row: 2;
+        width: 60px;
         padding: 4px;
         font-size: 13px;
+        justify-self: start;
     }
 
     .addon-price {
+        grid-column: 2;
+        grid-row: 2;
         font-size: 13px;
         font-weight: 600;
-        min-width: 55px;
+        color: var(--gold);
+        justify-self: end;
+        align-self: center;
     }
 
     /* Summary card */

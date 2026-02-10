@@ -280,7 +280,7 @@ class ClosetEstimatorApp {
     }
 
     updateTax(rate) {
-        this.calculator.updateTaxRate(rate);
+        this.calculator.updateTaxRate(parseFloat(rate) || 0);
         this.calculate();
     }
 
@@ -292,7 +292,7 @@ class ClosetEstimatorApp {
 
     updateDiscountValue(value) {
         const type = document.getElementById('discountType').value;
-        this.calculator.updateDiscount(type, value);
+        this.calculator.updateDiscount(type, parseFloat(value) || 0);
         this.calculate();
     }
 

@@ -232,8 +232,13 @@ class ReportGenerator {
         y += 3;
         doc.text('Rangel Pineda  •  678-709-3790  •  rangelp@desirecabinets.com', 105, y, { align: 'center' });
 
-        const filename = `DesireCabinets_Quote_${estimate.quoteNumber}_${estimate.client.name || 'Estimate'}.pdf`;
-        doc.save(filename);
+        // Save - open in new tab for iOS compatibility
+        const pdfBlob = doc.output('blob');
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        window.open(blobUrl, '_blank');
+        
+        // Clean up after a delay
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
     }
 
     // Generate alternate quote (e.g., without LEDs)
