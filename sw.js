@@ -1,6 +1,6 @@
 // Service Worker for Desire Cabinets Estimator PWA
 
-const CACHE_NAME = 'desire-estimator-v10-github-pages';
+const CACHE_NAME = 'desire-estimator-v11-ultra-tight-padding';
 const urlsToCache = [
   '/DesireCabinets/',
   '/DesireCabinets/index.html',

@@ -1,7 +1,7 @@
 {
-  "name": "DesireCabinets - Closet Estimator",
+  "name": "DesireCabinets - Estimator",
   "short_name": "DesireCabinets",
-  "description": "Professional closet estimator for Desire Cabinets LLC",
+  "description": "Estimator for Desire Cabinets LLC",
   "start_url": "/DesireCabinets/",
   "scope": "/DesireCabinets/",
   "display": "standalone",
