@@ -126,6 +126,7 @@ class ClosetEstimatorApp {
         
         container.innerHTML = Object.entries(PRICING_CONFIG.addons).map(([key, addon]) => {
             const savedAddon = currentRoom.addons[key] || { enabled: false, quantity: 0 };
+            const total = savedAddon.quantity * addon.price;
             return `
                 <div class="addon-item">
                     <input type="checkbox" id="addon-${key}" 
@@ -133,14 +134,14 @@ class ClosetEstimatorApp {
                            onchange="app.toggleAddon('${key}', this.checked)">
                     <div class="addon-details">
                         <div class="addon-name">${addon.name}</div>
-                        <div class="addon-unit">$${addon.price.toFixed(2)} per ${addon.unit}</div>
+                        <div class="addon-unit">$${addon.price.toFixed(2)} / ${addon.unit}</div>
                     </div>
                     <input type="number" class="addon-quantity" id="qty-${key}" 
                            min="0" step="${addon.unit.includes('linear') ? '0.5' : '1'}" 
                            value="${savedAddon.quantity}"
                            placeholder="Qty"
                            onchange="app.updateAddonQty('${key}', parseFloat(this.value) || 0)">
-                    <div class="addon-price">$${addon.price.toFixed(2)}</div>
+                    <div class="addon-price">$${total.toFixed(2)}</div>
                 </div>
             `;
         }).join('');
@@ -250,13 +251,6 @@ class ClosetEstimatorApp {
 
     updateClient(field, value) {
         this.calculator.updateClient(field, value);
-        
-        // Regenerate quote number when client name changes
-        if (field === 'name' && value) {
-            this.calculator.estimate.quoteNumber = this.calculator.generateQuoteNumber(value);
-            this.updateQuoteInfo();
-        }
-        
         this.save();
     }
 

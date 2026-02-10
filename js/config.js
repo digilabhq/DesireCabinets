@@ -39,6 +39,26 @@ const PRICING_CONFIG = {
             name: "Floating Shelves (3/4\" thick, 12\" deep)",
             price: 25,
             unit: "per linear foot"
+        },
+        hamper: {
+            name: "Hamper",
+            price: 175,
+            unit: "each"
+        },
+        mirror: {
+            name: "Mirror",
+            price: 150,
+            unit: "each"
+        },
+        doors: {
+            name: "Doors",
+            price: 45,
+            unit: "each"
+        },
+        ssTops: {
+            name: "SS Tops (25\" deep)",
+            price: 100,
+            unit: "per linear foot"
         }
     },
 

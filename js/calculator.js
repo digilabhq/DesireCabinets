@@ -16,6 +16,7 @@ class ClosetCalculator {
             taxRate: 0,  // Tax rate as percentage (e.g., 7.5 for 7.5%)
             discountType: 'percent',  // 'percent' or 'dollar'
             discountValue: 0,  // Discount amount
+            revision: 0,  // Revision number
             notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
@@ -39,18 +40,16 @@ class ClosetCalculator {
         };
     }
 
-    generateQuoteNumber(clientName = '') {
-        const timestamp = Date.now();
+    generateQuoteNumber() {
+        // Shorter format: YYMMDD-HHMM (e.g., 260210-1430)
+        const now = new Date();
+        const yy = String(now.getFullYear()).slice(-2);
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
         
-        // Extract initials from client name
-        let initials = '';
-        if (clientName) {
-            const nameParts = clientName.trim().split(' ').filter(p => p.length > 0);
-            initials = nameParts.map(p => p[0].toUpperCase()).join('');
-            if (initials.length > 3) initials = initials.slice(0, 3); // Max 3 initials
-        }
-        
-        return initials ? `${timestamp}-${initials}` : `${timestamp}`;
+        return `${yy}${mm}${dd}-${hh}${min}`;
     }
 
     // Get current room being edited
@@ -200,24 +199,31 @@ class ClosetCalculator {
         const { closetType, linearFeet, depth, height, material, hardwareFinish, mounting } = room.closet;
         const materialName = PRICING_CONFIG.materials.find(m => m.id === material)?.name || 'White';
         const hardwareName = PRICING_CONFIG.hardwareFinishes.find(h => h.id === hardwareFinish)?.name || 'Black';
-        const mountingName = PRICING_CONFIG.mounting.find(m => m.id === mounting)?.name || 'Floor Mounted';
         const closetTypeName = closetType === 'walk-in' ? 'Walk-In' : 'Reach-In';
         
         const activeAddons = this.getActiveAddons(room);
 
         // Room name with closet type
-        let description = `${room.name ? room.name + ' - ' : ''}${closetTypeName} Closet`;
+        let title = `${room.name ? room.name + ' - ' : ''}${closetTypeName} Closet`;
+        
+        // Build details array
+        let details = [
+            `${linearFeet} linear feet × ${depth}" depth × ${height}" height`,
+            `3/4" ${materialName} melamine finish`,
+            `${hardwareName} hardware (Pulls & Rod)`,
+            ...activeAddons.map(addon => {
+                if (addon.unit === 'per linear foot') {
+                    return `${addon.name} (${addon.quantity} LF)`;
+                } else {
+                    return `${addon.name} (${addon.quantity})`;
+                }
+            }),
+            'Installation and delivery included'
+        ];
         
         return {
-            title: description,
-            details: [
-                `${linearFeet} linear feet × ${depth}" depth`,
-                `${materialName} melamine finish`,
-                `${hardwareName} hardware`,
-                `${mountingName}`,
-                ...activeAddons.map(addon => `${addon.name} (${addon.quantity} ${addon.unit})`),
-                'Installation included'
-            ]
+            title,
+            details
         };
     }
 
@@ -275,6 +281,7 @@ class ClosetCalculator {
             taxRate: 0,
             discountType: 'percent',
             discountValue: 0,
+            revision: 0,
             notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
