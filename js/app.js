@@ -162,14 +162,14 @@ class ClosetEstimatorApp {
         document.getElementById('linearFeet').value = currentRoom.closet.linearFeet || 0;
         document.getElementById('height').value = currentRoom.closet.height || 96;
         
+        // Room notes
+        document.getElementById('roomNotes').value = currentRoom.notes || '';
+        
         // Tax and discount
         document.getElementById('taxRate').value = estimate.taxRate || 0;
         document.getElementById('discountType').value = estimate.discountType || 'percent';
         document.getElementById('discountValue').value = estimate.discountValue || 0;
         document.getElementById('revisionNumber').value = estimate.revision || 0;
-        
-        // Notes
-        document.getElementById('projectNotes').value = estimate.notes || '';
     }
 
     updateQuoteInfo() {
@@ -241,12 +241,14 @@ class ClosetEstimatorApp {
     toggleAddon(addonKey, enabled) {
         const qty = parseFloat(document.getElementById(`qty-${addonKey}`).value) || 0;
         this.calculator.updateAddon(addonKey, enabled, qty);
+        this.renderAddonList(); // Re-render to update totals
         this.calculate();
     }
 
     updateAddonQty(addonKey, qty) {
         const checkbox = document.getElementById(`addon-${addonKey}`);
         this.calculator.updateAddon(addonKey, checkbox.checked, qty);
+        this.renderAddonList(); // Re-render to update totals
         this.calculate();
     }
 
@@ -265,8 +267,8 @@ class ClosetEstimatorApp {
         this.calculate();
     }
 
-    updateNotes(notes) {
-        this.calculator.updateNotes(notes);
+    updateRoomNotes(notes) {
+        this.calculator.updateRoomNotes(notes);
         this.save();
     }
 

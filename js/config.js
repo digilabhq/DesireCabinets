@@ -59,6 +59,11 @@ const PRICING_CONFIG = {
             name: "SS Tops (25\" deep)",
             price: 100,
             unit: "per linear foot"
+        },
+        removalDisposal: {
+            name: "Removal of Old System & Trash Disposal",
+            price: 150,
+            unit: "each"
         }
     },
 

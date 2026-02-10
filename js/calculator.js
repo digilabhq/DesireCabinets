@@ -17,7 +17,6 @@ class ClosetCalculator {
             discountType: 'percent',  // 'percent' or 'dollar'
             discountValue: 0,  // Discount amount
             revision: 0,  // Revision number
-            notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
         };
@@ -36,7 +35,8 @@ class ClosetCalculator {
                 hardwareFinish: 'black',
                 mounting: 'floor'
             },
-            addons: {}
+            addons: {},
+            notes: ''  // Room-specific notes
         };
     }
 
@@ -203,8 +203,8 @@ class ClosetCalculator {
         
         const activeAddons = this.getActiveAddons(room);
 
-        // Room name with closet type
-        let title = `${room.name ? room.name + ' - ' : ''}${closetTypeName} Closet`;
+        // Room name with closet type (no "Closet" word)
+        let title = room.name ? `${room.name} - ${closetTypeName}` : closetTypeName;
         
         // Build details array
         let details = [
@@ -242,14 +242,14 @@ class ClosetCalculator {
         this.getCurrentRoom().name = name;
     }
 
+    // Update current room's notes
+    updateRoomNotes(notes) {
+        this.getCurrentRoom().notes = notes;
+    }
+
     // Update addon for current room
     updateAddon(addonKey, enabled, quantity = 0) {
         this.getCurrentRoom().addons[addonKey] = { enabled, quantity };
-    }
-
-    // Update notes
-    updateNotes(notes) {
-        this.estimate.notes = notes;
     }
 
     // Update tax rate
@@ -282,7 +282,6 @@ class ClosetCalculator {
             discountType: 'percent',
             discountValue: 0,
             revision: 0,
-            notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
         };
