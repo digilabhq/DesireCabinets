@@ -58,6 +58,86 @@ body {
     gap: 10px;
 }
 
+/* Room Tabs */
+.room-tabs-container {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.room-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.room-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.room-tab:hover {
+    border-color: var(--gold);
+    transform: translateY(-1px);
+}
+
+.room-tab.active {
+    border-color: var(--gold);
+    background: rgba(184, 134, 11, 0.1);
+    font-weight: 600;
+}
+
+.room-tab-name {
+    color: var(--dark-gray);
+}
+
+.room-tab-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.1);
+    color: var(--dark-gray);
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.room-tab-remove:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.room-tab-add {
+    padding: 12px 16px;
+    border: 2px dashed var(--border);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gold);
+}
+
+.room-tab-add:hover {
+    border-color: var(--gold);
+    background: rgba(184, 134, 11, 0.05);
+}
+
 /* Cards */
 .card {
     background: var(--white);
@@ -353,8 +433,9 @@ textarea {
 
 /* Quote Info */
 .quote-info {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
     padding: 15px;
     background: rgba(184, 134, 11, 0.05);
     border-radius: 6px;
@@ -383,6 +464,14 @@ textarea {
     .header-content {
         flex-direction: column;
         text-align: center;
+    }
+
+    .room-tabs {
+        flex-direction: column;
+    }
+
+    .quote-info {
+        grid-template-columns: 1fr;
     }
 
     .depth-selector {

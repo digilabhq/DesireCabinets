@@ -1,4 +1,5 @@
 // Main App Controller - Desire Cabinets Estimator
+// Multi-Room Support
 
 class ClosetEstimatorApp {
     constructor() {
@@ -10,6 +11,9 @@ class ClosetEstimatorApp {
     init() {
         // Load saved estimate if exists
         this.calculator.loadFromStorage();
+        
+        // Render room tabs
+        this.renderRoomTabs();
         
         // Render all UI components
         this.renderDepthSelector();
@@ -31,15 +35,33 @@ class ClosetEstimatorApp {
         this.setupAutoSave();
     }
 
+    renderRoomTabs() {
+        const container = document.getElementById('roomTabs');
+        const rooms = this.calculator.getRooms();
+        
+        container.innerHTML = rooms.map((room, index) => `
+            <button class="room-tab ${index === this.calculator.currentRoomIndex ? 'active' : ''}" 
+                    onclick="app.switchToRoom(${index})">
+                <span class="room-tab-name">${room.name || `Room ${index + 1}`}</span>
+                ${rooms.length > 1 ? `<span class="room-tab-remove" onclick="event.stopPropagation(); app.deleteRoom(${index})">×</span>` : ''}
+            </button>
+        `).join('') + `
+            <button class="room-tab-add" onclick="app.addNewRoom()">
+                + Add Room
+            </button>
+        `;
+    }
+
     renderDepthSelector() {
         const container = document.getElementById('depthSelector');
         const depths = [14, 16, 19, 24];
+        const currentRoom = this.calculator.getCurrentRoom();
         
         container.innerHTML = depths.map(depth => `
-            <div class="depth-option ${this.calculator.estimate.closet.depth === depth ? 'selected' : ''}" 
+            <div class="depth-option ${currentRoom.closet.depth === depth ? 'selected' : ''}" 
                  onclick="app.selectDepth(${depth})">
                 <input type="radio" name="depth" value="${depth}" id="depth${depth}" 
-                       ${this.calculator.estimate.closet.depth === depth ? 'checked' : ''}>
+                       ${currentRoom.closet.depth === depth ? 'checked' : ''}>
                 <div class="depth-label">${depth}"</div>
             </div>
         `).join('');
@@ -47,9 +69,10 @@ class ClosetEstimatorApp {
 
     renderMaterialSelector() {
         const container = document.getElementById('materialSelector');
+        const currentRoom = this.calculator.getCurrentRoom();
         
         container.innerHTML = PRICING_CONFIG.materials.map(material => `
-            <button class="selection-btn ${this.calculator.estimate.closet.material === material.id ? 'selected' : ''}" 
+            <button class="selection-btn ${currentRoom.closet.material === material.id ? 'selected' : ''}" 
                  onclick="app.selectMaterial('${material.id}')">
                 ${material.name}${material.upcharge > 0 ? ` (+$${material.upcharge}/ft)` : ''}
             </button>
@@ -58,9 +81,10 @@ class ClosetEstimatorApp {
 
     renderHardwareSelector() {
         const container = document.getElementById('hardwareSelector');
+        const currentRoom = this.calculator.getCurrentRoom();
         
         container.innerHTML = PRICING_CONFIG.hardwareFinishes.map(hardware => `
-            <button class="selection-btn ${this.calculator.estimate.closet.hardwareFinish === hardware.id ? 'selected' : ''}" 
+            <button class="selection-btn ${currentRoom.closet.hardwareFinish === hardware.id ? 'selected' : ''}" 
                  onclick="app.selectHardware('${hardware.id}')">
                 ${hardware.name}
             </button>
@@ -69,9 +93,10 @@ class ClosetEstimatorApp {
 
     renderMountingSelector() {
         const container = document.getElementById('mountingSelector');
+        const currentRoom = this.calculator.getCurrentRoom();
         
         container.innerHTML = PRICING_CONFIG.mounting.map(mount => `
-            <button class="selection-btn ${this.calculator.estimate.closet.mounting === mount.id ? 'selected' : ''}" 
+            <button class="selection-btn ${currentRoom.closet.mounting === mount.id ? 'selected' : ''}" 
                  onclick="app.selectMounting('${mount.id}')">
                 ${mount.name}
             </button>
@@ -80,9 +105,10 @@ class ClosetEstimatorApp {
 
     renderAddonList() {
         const container = document.getElementById('addonList');
+        const currentRoom = this.calculator.getCurrentRoom();
         
         container.innerHTML = Object.entries(PRICING_CONFIG.addons).map(([key, addon]) => {
-            const savedAddon = this.calculator.estimate.addons[key] || { enabled: false, quantity: 0 };
+            const savedAddon = currentRoom.addons[key] || { enabled: false, quantity: 0 };
             return `
                 <div class="addon-item">
                     <input type="checkbox" id="addon-${key}" 
@@ -105,6 +131,7 @@ class ClosetEstimatorApp {
 
     loadFormValues() {
         const estimate = this.calculator.estimate;
+        const currentRoom = this.calculator.getCurrentRoom();
         
         // Client info
         document.getElementById('clientName').value = estimate.client.name || '';
@@ -112,10 +139,10 @@ class ClosetEstimatorApp {
         document.getElementById('clientAddress').value = estimate.client.address || '';
         document.getElementById('clientEmail').value = estimate.client.email || '';
         
-        // Closet specs
-        document.getElementById('roomName').value = estimate.closet.roomName || '';
-        document.getElementById('linearFeet').value = estimate.closet.linearFeet || 0;
-        document.getElementById('height').value = estimate.closet.height || 96;
+        // Current room specs
+        document.getElementById('roomName').value = currentRoom.name || '';
+        document.getElementById('linearFeet').value = currentRoom.closet.linearFeet || 0;
+        document.getElementById('height').value = currentRoom.closet.height || 96;
         
         // Notes
         document.getElementById('projectNotes').value = estimate.notes || '';
@@ -124,6 +151,36 @@ class ClosetEstimatorApp {
     updateQuoteInfo() {
         document.getElementById('quoteNumber').textContent = this.calculator.estimate.quoteNumber;
         document.getElementById('quoteDate').textContent = new Date(this.calculator.estimate.date).toLocaleDateString();
+    }
+
+    // Room management
+    addNewRoom() {
+        this.calculator.addRoom();
+        this.renderRoomTabs();
+        this.switchToRoom(this.calculator.currentRoomIndex);
+    }
+
+    deleteRoom(index) {
+        if (confirm('Are you sure you want to delete this room?')) {
+            if (this.calculator.removeRoom(index)) {
+                this.renderRoomTabs();
+                this.switchToRoom(this.calculator.currentRoomIndex);
+            }
+        }
+    }
+
+    switchToRoom(index) {
+        this.calculator.switchRoom(index);
+        
+        // Re-render all selectors for new room
+        this.renderRoomTabs();
+        this.renderDepthSelector();
+        this.renderMaterialSelector();
+        this.renderHardwareSelector();
+        this.renderMountingSelector();
+        this.renderAddonList();
+        this.loadFormValues();
+        this.calculate();
     }
 
     selectDepth(depth) {
@@ -175,7 +232,12 @@ class ClosetEstimatorApp {
     }
 
     updateCloset(field, value) {
-        this.calculator.updateCloset(field, value);
+        if (field === 'roomName') {
+            this.calculator.updateRoomName(value);
+            this.renderRoomTabs(); // Update tab name
+        } else {
+            this.calculator.updateCloset(field, value);
+        }
         this.calculate();
     }
 
@@ -213,10 +275,9 @@ class ClosetEstimatorApp {
             addonsLine.style.display = 'none';
         }
 
-        // Show alternate quote button if LEDs are enabled
-        const hasLEDs = this.calculator.estimate.addons.colorChangingLEDs?.enabled;
-        const altBtn = document.getElementById('altQuoteBtn');
-        altBtn.style.display = hasLEDs ? 'block' : 'none';
+        // Update room count display
+        const roomCount = this.calculator.getRooms().length;
+        document.getElementById('roomCount').textContent = roomCount > 1 ? `${roomCount} Rooms` : '1 Room';
         
         this.save();
     }
@@ -231,19 +292,13 @@ class ClosetEstimatorApp {
     }
 
     async generatePDF() {
-        if (this.calculator.estimate.closet.linearFeet === 0) {
-            alert('Please enter linear feet before generating quote.');
+        const totalLF = this.calculator.getRooms().reduce((sum, room) => sum + room.closet.linearFeet, 0);
+        
+        if (totalLF === 0) {
+            alert('Please enter linear feet for at least one room before generating quote.');
             return;
         }
         await this.reportGenerator.generate();
-    }
-
-    async generateAlternatePDF() {
-        if (this.calculator.estimate.closet.linearFeet === 0) {
-            alert('Please enter linear feet before generating quote.');
-            return;
-        }
-        await this.reportGenerator.generateAlternate('colorChangingLEDs');
     }
 
     reset() {

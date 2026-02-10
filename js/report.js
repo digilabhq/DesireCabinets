@@ -92,31 +92,53 @@ class ReportGenerator {
 
         y += 8;
 
-        // Description (wraps if needed)
+        // Loop through each room and add to PDF
         doc.setTextColor(...darkGray);
         doc.setFont(undefined, 'normal');
         doc.setFontSize(8.5);
         
-        const description = estimate.description;
-        const splitDesc = doc.splitTextToSize(description, 120);
-        
-        const descHeight = splitDesc.length * 4;
-        doc.rect(15, y, 180, descHeight + 4, 'S');
-        
-        doc.text(splitDesc, 18, y + 4);
-        doc.text('1', 140, y + 4);
-        doc.text(calculations.total.toFixed(2), 155, y + 4);
-        doc.text(calculations.total.toFixed(2), 175, y + 4);
+        estimate.rooms.forEach((room, index) => {
+            const roomCalc = calculations.rooms[index];
+            const description = this.calculator.generateRoomDescription(room);
+            const splitDesc = doc.splitTextToSize(description, 120);
+            
+            const descHeight = splitDesc.length * 4;
+            
+            // Check if we need a new page
+            if (y + descHeight + 4 > 270) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.rect(15, y, 180, descHeight + 4, 'S');
+            
+            doc.text(splitDesc, 18, y + 4);
+            doc.text('1', 140, y + 4);
+            doc.text(roomCalc.total.toFixed(2), 155, y + 4);
+            doc.text(roomCalc.total.toFixed(2), 175, y + 4);
 
-        y += descHeight + 15;
+            y += descHeight + 4;
+        });
+
+        y += 5;
 
         // Empty rows (professional spacing)
         for (let i = 0; i < 2; i++) {
+            if (y + 6 > 270) {
+                doc.addPage();
+                y = 20;
+            }
             doc.rect(15, y, 180, 6, 'S');
             y += 6;
         }
 
         y += 5;
+
+        // Check if we need new page for totals
+        if (y + 30 > 270) {
+            doc.addPage();
+            y = 20;
+        }
 
         // Footer totals
         doc.setFont(undefined, 'italic');
@@ -146,7 +168,8 @@ class ReportGenerator {
         doc.text(`$  ${calculations.total.toFixed(2)}`, 165, y + 3);
 
         // Bottom contact info
-        y = 280;
+        const pageHeight = doc.internal.pageSize.height;
+        y = pageHeight - 10;
         doc.setFontSize(8);
         doc.setFont(undefined, 'normal');
         doc.setTextColor(100, 100, 100);

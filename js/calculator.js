@@ -1,4 +1,5 @@
 // Calculator Module - Desire Cabinets LLC
+// Multi-Room Support
 
 class ClosetCalculator {
     constructor() {
@@ -9,19 +10,28 @@ class ClosetCalculator {
                 phone: '',
                 email: ''
             },
+            rooms: [
+                this.createNewRoom()  // Start with one room
+            ],
+            notes: '',
+            quoteNumber: this.generateQuoteNumber(),
+            date: new Date().toISOString().split('T')[0]
+        };
+        this.currentRoomIndex = 0;  // Track which room we're editing
+    }
+
+    createNewRoom() {
+        return {
+            name: '',  // e.g., "Master Bedroom", "Walk-in Closet", etc.
             closet: {
-                roomName: '',  // e.g., "Master Bedroom", "Guest Room"
                 linearFeet: 0,
                 depth: 16,
-                height: 96,  // Default height
+                height: 96,
                 material: 'white',
                 hardwareFinish: 'black',
                 mounting: 'floor'
             },
-            addons: {},
-            notes: '',
-            quoteNumber: this.generateQuoteNumber(),
-            date: new Date().toISOString().split('T')[0]
+            addons: {}
         };
     }
 
@@ -39,24 +49,62 @@ class ClosetCalculator {
         return initials ? `${timestamp}-${initials}` : `${timestamp}`;
     }
 
-    // Calculate base system cost
-    calculateBase() {
-        const { linearFeet, depth } = this.estimate.closet;
+    // Get current room being edited
+    getCurrentRoom() {
+        return this.estimate.rooms[this.currentRoomIndex];
+    }
+
+    // Get all rooms
+    getRooms() {
+        return this.estimate.rooms;
+    }
+
+    // Add a new room
+    addRoom() {
+        this.estimate.rooms.push(this.createNewRoom());
+        this.currentRoomIndex = this.estimate.rooms.length - 1;
+        return this.currentRoomIndex;
+    }
+
+    // Remove a room
+    removeRoom(index) {
+        if (this.estimate.rooms.length > 1) {
+            this.estimate.rooms.splice(index, 1);
+            if (this.currentRoomIndex >= this.estimate.rooms.length) {
+                this.currentRoomIndex = this.estimate.rooms.length - 1;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Switch to different room
+    switchRoom(index) {
+        if (index >= 0 && index < this.estimate.rooms.length) {
+            this.currentRoomIndex = index;
+            return true;
+        }
+        return false;
+    }
+
+    // Calculate base system cost for a specific room
+    calculateRoomBase(room) {
+        const { linearFeet, depth } = room.closet;
         const pricePerFoot = PRICING_CONFIG.baseSystem[depth];
         return linearFeet * pricePerFoot;
     }
 
-    // Calculate material upcharge
-    calculateMaterialUpcharge() {
-        const { linearFeet, material } = this.estimate.closet;
+    // Calculate material upcharge for a specific room
+    calculateRoomMaterialUpcharge(room) {
+        const { linearFeet, material } = room.closet;
         const materialConfig = PRICING_CONFIG.materials.find(m => m.id === material);
         return linearFeet * (materialConfig?.upcharge || 0);
     }
 
-    // Calculate all add-ons
-    calculateAddons() {
+    // Calculate all add-ons for a specific room
+    calculateRoomAddons(room) {
         let total = 0;
-        for (const [key, value] of Object.entries(this.estimate.addons)) {
+        for (const [key, value] of Object.entries(room.addons)) {
             if (value.enabled && value.quantity > 0) {
                 const addonConfig = PRICING_CONFIG.addons[key];
                 total += value.quantity * addonConfig.price;
@@ -65,26 +113,49 @@ class ClosetCalculator {
         return total;
     }
 
-    // Calculate grand total
-    calculateTotal() {
-        const base = this.calculateBase();
-        const materialUpcharge = this.calculateMaterialUpcharge();
-        const addons = this.calculateAddons();
+    // Calculate total for a specific room
+    calculateRoomTotal(room) {
+        const base = this.calculateRoomBase(room);
+        const materialUpcharge = this.calculateRoomMaterialUpcharge(room);
+        const addons = this.calculateRoomAddons(room);
 
         return {
             base,
             materialUpcharge,
             addons,
-            subtotal: base + materialUpcharge + addons,
-            tax: 0,  // Can add tax calculation if needed
             total: base + materialUpcharge + addons
         };
     }
 
-    // Get active add-ons for description
-    getActiveAddons() {
+    // Calculate grand total across all rooms
+    calculateTotal() {
+        let totalBase = 0;
+        let totalMaterialUpcharge = 0;
+        let totalAddons = 0;
+
+        const roomTotals = this.estimate.rooms.map(room => {
+            const roomCalc = this.calculateRoomTotal(room);
+            totalBase += roomCalc.base;
+            totalMaterialUpcharge += roomCalc.materialUpcharge;
+            totalAddons += roomCalc.addons;
+            return roomCalc;
+        });
+
+        return {
+            base: totalBase,
+            materialUpcharge: totalMaterialUpcharge,
+            addons: totalAddons,
+            subtotal: totalBase + totalMaterialUpcharge + totalAddons,
+            tax: 0,
+            total: totalBase + totalMaterialUpcharge + totalAddons,
+            rooms: roomTotals
+        };
+    }
+
+    // Get active add-ons for a specific room
+    getActiveAddons(room) {
         const active = [];
-        for (const [key, value] of Object.entries(this.estimate.addons)) {
+        for (const [key, value] of Object.entries(room.addons)) {
             if (value.enabled && value.quantity > 0) {
                 const addonConfig = PRICING_CONFIG.addons[key];
                 active.push({
@@ -99,17 +170,17 @@ class ClosetCalculator {
         return active;
     }
 
-    // Generate quote description (like your actual quotes)
-    generateDescription() {
-        const { roomName, linearFeet, depth, height, material, hardwareFinish, mounting } = this.estimate.closet;
+    // Generate description for a specific room
+    generateRoomDescription(room) {
+        const { linearFeet, depth, height, material, hardwareFinish, mounting } = room.closet;
         const materialName = PRICING_CONFIG.materials.find(m => m.id === material)?.name || 'White';
         const hardwareName = PRICING_CONFIG.hardwareFinishes.find(h => h.id === hardwareFinish)?.name || 'Black';
         const mountingName = PRICING_CONFIG.mounting.find(m => m.id === mounting)?.name || 'Floor Mounted';
         
-        const activeAddons = this.getActiveAddons();
+        const activeAddons = this.getActiveAddons(room);
         const hasLEDs = activeAddons.some(a => a.key === 'colorChangingLEDs');
 
-        let description = `${roomName ? roomName + ' - ' : ''}Walk-In Closet - ${mountingName.toLowerCase()} (~${linearFeet} LF x ${depth}"D x ${height}"H. 3/4" ${materialName} melamine frameless cabinets, plain doors/drawers, ${hardwareName} exposed hardware, full extension drawer slides`;
+        let description = `${room.name ? room.name + ' - ' : ''}Walk-In Closet - ${mountingName.toLowerCase()} (~${linearFeet} LF x ${depth}"D x ${height}"H. 3/4" ${materialName} melamine frameless cabinets, plain doors/drawers, ${hardwareName} exposed hardware, full extension drawer slides`;
         
         if (hasLEDs) {
             description += ', LED lighting';
@@ -125,14 +196,19 @@ class ClosetCalculator {
         this.estimate.client[field] = value;
     }
 
-    // Update closet specs
+    // Update current room's closet specs
     updateCloset(field, value) {
-        this.estimate.closet[field] = value;
+        this.getCurrentRoom().closet[field] = value;
     }
 
-    // Update addon
+    // Update current room's name
+    updateRoomName(name) {
+        this.getCurrentRoom().name = name;
+    }
+
+    // Update addon for current room
     updateAddon(addonKey, enabled, quantity = 0) {
-        this.estimate.addons[addonKey] = { enabled, quantity };
+        this.getCurrentRoom().addons[addonKey] = { enabled, quantity };
     }
 
     // Update notes
@@ -145,7 +221,8 @@ class ClosetCalculator {
         return {
             ...this.estimate,
             calculations: this.calculateTotal(),
-            description: this.generateDescription()
+            currentRoom: this.getCurrentRoom(),
+            currentRoomIndex: this.currentRoomIndex
         };
     }
 
@@ -153,20 +230,12 @@ class ClosetCalculator {
     reset() {
         this.estimate = {
             client: { name: '', address: '', phone: '', email: '' },
-            closet: {
-                roomName: '',
-                linearFeet: 0,
-                depth: 16,
-                height: 96,
-                material: 'white',
-                hardwareFinish: 'black',
-                mounting: 'floor'
-            },
-            addons: {},
+            rooms: [this.createNewRoom()],
             notes: '',
             quoteNumber: this.generateQuoteNumber(),
             date: new Date().toISOString().split('T')[0]
         };
+        this.currentRoomIndex = 0;
     }
 
     // Load from localStorage
@@ -174,7 +243,13 @@ class ClosetCalculator {
         const saved = localStorage.getItem('desire-estimate');
         if (saved) {
             try {
-                this.estimate = JSON.parse(saved);
+                const data = JSON.parse(saved);
+                this.estimate = data;
+                // Ensure we have at least one room
+                if (!this.estimate.rooms || this.estimate.rooms.length === 0) {
+                    this.estimate.rooms = [this.createNewRoom()];
+                }
+                this.currentRoomIndex = 0;
             } catch (e) {
                 console.error('Error loading saved estimate:', e);
             }
