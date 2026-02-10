@@ -166,6 +166,7 @@ class ClosetEstimatorApp {
         document.getElementById('taxRate').value = estimate.taxRate || 0;
         document.getElementById('discountType').value = estimate.discountType || 'percent';
         document.getElementById('discountValue').value = estimate.discountValue || 0;
+        document.getElementById('revisionNumber').value = estimate.revision || 0;
         
         // Notes
         document.getElementById('projectNotes').value = estimate.notes || '';
@@ -284,6 +285,56 @@ class ClosetEstimatorApp {
         const type = document.getElementById('discountType').value;
         this.calculator.updateDiscount(type, value);
         this.calculate();
+    }
+
+    updateRevision(value) {
+        this.calculator.estimate.revision = value;
+        this.save();
+    }
+
+    downloadQuote() {
+        const data = JSON.stringify(this.calculator.estimate, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `DesireCabinets_Quote_${this.calculator.estimate.quoteNumber}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    uploadQuote(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                this.calculator.estimate = data;
+                this.calculator.currentRoomIndex = 0;
+                
+                // Re-render everything
+                this.renderRoomTabs();
+                this.renderClosetTypeSelector();
+                this.renderDepthSelector();
+                this.renderMaterialSelector();
+                this.renderHardwareSelector();
+                this.renderMountingSelector();
+                this.renderAddonList();
+                this.loadFormValues();
+                this.updateQuoteInfo();
+                this.calculate();
+                
+                alert('Quote loaded successfully!');
+            } catch (err) {
+                alert('Error loading quote file: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Reset file input
+        event.target.value = '';
     }
 
     calculate() {
