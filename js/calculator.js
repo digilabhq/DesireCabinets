@@ -104,15 +104,17 @@ class ClosetCalculator {
     // Calculate base system cost for a specific room
     calculateRoomBase(room) {
         const { linearFeet, depth } = room.closet;
-        const pricePerFoot = PRICING_CONFIG.baseSystem[depth];
-        return linearFeet * pricePerFoot;
+        const pricePerFoot = PRICING_CONFIG.baseSystem[depth] || 0;
+        const feet = parseFloat(linearFeet) || 0;
+        return feet * pricePerFoot;
     }
 
     // Calculate material upcharge for a specific room
     calculateRoomMaterialUpcharge(room) {
         const { linearFeet, material } = room.closet;
         const materialConfig = PRICING_CONFIG.materials.find(m => m.id === material);
-        return linearFeet * (materialConfig?.upcharge || 0);
+        const feet = parseFloat(linearFeet) || 0;
+        return feet * (materialConfig?.upcharge || 0);
     }
 
     // Calculate all add-ons for a specific room
@@ -121,7 +123,11 @@ class ClosetCalculator {
         for (const [key, value] of Object.entries(room.addons)) {
             if (value.enabled && value.quantity > 0) {
                 const addonConfig = PRICING_CONFIG.addons[key];
-                total += value.quantity * addonConfig.price;
+                if (addonConfig) {
+                    const qty = parseFloat(value.quantity) || 0;
+                    const price = parseFloat(addonConfig.price) || 0;
+                    total += qty * price;
+                }
             }
         }
         return total;
@@ -157,20 +163,22 @@ class ClosetCalculator {
 
         const subtotal = totalBase + totalMaterialUpcharge + totalAddons;
         
-        // Calculate discount
+        // Calculate discount - ensure no NaN
         let discountAmount = 0;
-        if (this.estimate.discountValue > 0) {
+        const discountValue = parseFloat(this.estimate.discountValue) || 0;
+        if (discountValue > 0) {
             if (this.estimate.discountType === 'percent') {
-                discountAmount = subtotal * (this.estimate.discountValue / 100);
+                discountAmount = subtotal * (discountValue / 100);
             } else {
-                discountAmount = this.estimate.discountValue;
+                discountAmount = discountValue;
             }
         }
         
         const afterDiscount = subtotal - discountAmount;
         
-        // Calculate tax
-        const taxAmount = afterDiscount * (this.estimate.taxRate / 100);
+        // Calculate tax - ensure no NaN
+        const taxRate = parseFloat(this.estimate.taxRate) || 0;
+        const taxAmount = afterDiscount * (taxRate / 100);
         
         const total = afterDiscount + taxAmount;
 

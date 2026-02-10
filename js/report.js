@@ -232,13 +232,33 @@ class ReportGenerator {
         y += 3;
         doc.text('Rangel Pineda  •  678-709-3790  •  rangelp@desirecabinets.com', 105, y, { align: 'center' });
 
-        // Save - open in new tab for iOS compatibility
+        // Generate filename - simple format: DC_260210-1458-RP.pdf
+        const filename = `DC_${estimate.quoteNumber}.pdf`;
+        
+        // For iOS/mobile - open in new tab with proper handling
         const pdfBlob = doc.output('blob');
         const blobUrl = URL.createObjectURL(pdfBlob);
-        window.open(blobUrl, '_blank');
         
-        // Clean up after a delay
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        // Try download first (works on desktop and some mobile browsers)
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Fallback: open in new tab (for iOS Safari)
+        setTimeout(() => {
+            if (!document.hidden) {
+                window.open(blobUrl, '_blank');
+            }
+        }, 100);
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+        }, 1000);
     }
 
     // Generate alternate quote (e.g., without LEDs)
