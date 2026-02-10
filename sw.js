@@ -1,6 +1,6 @@
 // Service Worker for Desire Cabinets Estimator PWA
 
-const CACHE_NAME = 'desire-estimator-v5-final-colors';
+const CACHE_NAME = 'desire-estimator-v6-mobile-optimized';
 const urlsToCache = [
   '/',
   '/index.html',

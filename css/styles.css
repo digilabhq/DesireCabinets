@@ -472,43 +472,317 @@ textarea {
 
 /* Responsive */
 @media (max-width: 768px) {
+    /* Header */
     .header-content {
         flex-direction: column;
-        text-align: center;
+        gap: 10px;
+        padding: 15px;
     }
 
-    .room-tabs {
-        flex-direction: column;
+    .logo-container {
+        max-width: 200px;
     }
 
-    .quote-info {
-        grid-template-columns: 1fr;
+    .header-actions {
+        width: 100%;
     }
 
-    .depth-selector {
-        grid-template-columns: 1fr;
+    .btn-secondary {
+        width: 100%;
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    /* Main container - stack vertically */
+    .container {
+        padding: 10px;
+    }
+
+    /* Force vertical stacking on mobile */
+    .container > div[style*="grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* Cards - more compact */
+    .card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .card-header {
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+
+    .card-header h2 {
+        font-size: 15px;
+    }
+
+    /* Forms - smaller spacing */
+    .form-group {
+        margin-bottom: 8px;
+    }
+
+    .form-group label {
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+        padding: 6px;
+        font-size: 14px;
     }
 
     .form-grid {
         grid-template-columns: 1fr;
+        gap: 8px;
     }
 
+    /* Room tabs - horizontal scroll */
+    .room-tabs-container {
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+
+    .room-tabs {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+
+    .room-tab {
+        min-width: 90px;
+        padding: 8px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .room-tab button {
+        font-size: 11px;
+        padding: 2px 4px;
+    }
+
+    .add-room-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* Quote info grid */
+    .quote-info {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .quote-info-label {
+        font-size: 10px;
+    }
+
+    .quote-info-value {
+        font-size: 13px;
+    }
+
+    /* Depth selector */
+    .depth-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .depth-option {
+        padding: 8px;
+    }
+
+    .depth-label {
+        font-size: 15px;
+    }
+
+    /* Material/Hardware selectors */
     .selection-grid {
         grid-template-columns: 1fr;
+        gap: 6px;
     }
 
+    .selection-btn {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    /* Add-ons - more compact */
+    .addon-item {
+        grid-template-columns: auto 1fr auto auto;
+        padding: 8px;
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .addon-details {
+        min-width: 0;
+    }
+
+    .addon-name {
+        font-size: 12px;
+    }
+
+    .addon-unit {
+        font-size: 10px;
+    }
+
+    .addon-quantity {
+        width: 45px;
+        padding: 4px;
+        font-size: 13px;
+    }
+
+    .addon-price {
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 55px;
+    }
+
+    /* Summary card */
     .summary-card {
         position: static;
-        margin-top: 20px;
+        padding: 10px;
+        margin-bottom: 12px;
+        order: -1; /* Move to top on mobile */
+    }
+
+    .summary-card h2 {
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
+    .summary-line {
+        padding: 5px 0;
+        font-size: 12px;
+    }
+
+    .summary-label {
+        font-size: 11px;
+    }
+
+    .summary-value {
+        font-size: 13px;
+    }
+
+    /* Room breakdown */
+    #roomBreakdown {
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
+    #roomBreakdownList div {
+        font-size: 11px;
+        padding: 3px 0;
+    }
+
+    /* Tax/Discount fields in summary */
+    .summary-card input[type="number"],
+    .summary-card select {
+        padding: 6px;
+        font-size: 13px;
+    }
+
+    .summary-card label {
+        font-size: 11px;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+        gap: 6px;
+        margin-top: 12px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 13px;
+        width: 100%;
+    }
+
+    .btn-primary {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Extra small phones (iPhone SE, etc) */
+@media (max-width: 375px) {
+    .logo-container {
+        max-width: 180px;
+    }
+
+    .card {
+        padding: 8px;
+    }
+
+    .card-header h2 {
+        font-size: 14px;
+    }
+
+    .form-group label {
+        font-size: 11px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+        font-size: 13px;
+        padding: 5px;
+    }
+
+    .room-tab {
+        min-width: 80px;
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+
+    .depth-option {
+        padding: 6px;
     }
 
     .addon-item {
-        grid-template-columns: auto 1fr;
+        padding: 6px;
+        font-size: 11px;
     }
 
-    .addon-quantity,
+    .addon-name {
+        font-size: 11px;
+    }
+
+    .addon-quantity {
+        width: 40px;
+        font-size: 12px;
+    }
+
     .addon-price {
-        grid-column: 2;
+        font-size: 12px;
+        min-width: 50px;
+    }
+
+    .summary-card {
+        padding: 8px;
+    }
+
+    .summary-line {
+        font-size: 11px;
+    }
+
+    .btn {
+        padding: 7px 10px;
+        font-size: 12px;
     }
 }
 
