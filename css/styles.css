@@ -59,6 +59,13 @@ body {
     gap: 8px;
 }
 
+/* New Quote Container - position differs for desktop vs mobile */
+.new-quote-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
 /* Room Tabs */
 .room-tabs-container {
     background: var(--white);
@@ -478,36 +485,33 @@ textarea {
 
 /* Responsive */
 @media (max-width: 768px) {
-    /* Header - logo alone, button below gold line */
+    /* Header - just logo, centered */
     .app-header {
         position: relative;
-        padding-bottom: 50px; /* Space for button below line */
     }
 
     .header-content {
         flex-direction: column;
         gap: 0;
         padding: 8px;
-        padding-bottom: 0;
+        text-align: center;
     }
 
     .logo-container {
         max-width: 200px;
-        margin: 0 auto; /* Center logo */
+        margin: 0 auto;
     }
 
-    .header-actions {
-        position: absolute;
-        bottom: 8px;
-        left: 15px;
-        right: 15px;
-        width: auto;
+    /* New Quote button - full width on mobile */
+    .new-quote-container {
+        justify-content: stretch;
+        margin-bottom: 12px;
     }
 
-    .btn-secondary {
+    .new-quote-container .btn {
         width: 100%;
-        font-size: 13px;
-        padding: 8px;
+        font-size: 14px;
+        padding: 10px;
     }
 
     /* Main container - stack vertically */

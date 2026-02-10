@@ -24,15 +24,17 @@
             <div class="logo-container">
                 <img src="images/logo.jpg" alt="Desire Cabinets LLC" id="logo-img">
             </div>
-            <div class="header-actions">
-                <button class="btn btn-secondary" onclick="app.reset()">
-                    <span>↻</span> New Quote
-                </button>
-            </div>
         </div>
     </header>
 
     <div class="container">
+        <!-- New Quote Button - below gold line on mobile -->
+        <div class="new-quote-container">
+            <button class="btn btn-secondary" onclick="app.reset()">
+                <span>↻</span> New Quote
+            </button>
+        </div>
+
         <!-- Room Tabs -->
         <div class="room-tabs-container">
             <div class="room-tabs" id="roomTabs">
@@ -261,7 +263,7 @@
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('/DesireCabinets/sw.js')
                 .then(reg => console.log('Service Worker registered'))
                 .catch(err => console.log('Service Worker registration failed'));
         }

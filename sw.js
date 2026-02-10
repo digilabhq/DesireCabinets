@@ -1,16 +1,16 @@
 // Service Worker for Desire Cabinets Estimator PWA
 
-const CACHE_NAME = 'desire-estimator-v9-pin-auth';
+const CACHE_NAME = 'desire-estimator-v10-github-pages';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/auth.js',
-  '/js/config.js',
-  '/js/calculator.js',
-  '/js/report.js',
-  '/js/app.js',
-  '/images/logo.jpg',
+  '/DesireCabinets/',
+  '/DesireCabinets/index.html',
+  '/DesireCabinets/css/styles.css',
+  '/DesireCabinets/js/auth.js',
+  '/DesireCabinets/js/config.js',
+  '/DesireCabinets/js/calculator.js',
+  '/DesireCabinets/js/report.js',
+  '/DesireCabinets/js/app.js',
+  '/DesireCabinets/images/logo.jpg',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
 

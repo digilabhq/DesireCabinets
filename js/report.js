@@ -235,30 +235,29 @@ class ReportGenerator {
         // Generate filename - simple format: DC_260210-1458-RP.pdf
         const filename = `DC_${estimate.quoteNumber}.pdf`;
         
-        // For iOS/mobile - open in new tab with proper handling
+        // Create PDF blob
         const pdfBlob = doc.output('blob');
         const blobUrl = URL.createObjectURL(pdfBlob);
         
-        // Try download first (works on desktop and some mobile browsers)
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
+        // Detect mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        // Fallback: open in new tab (for iOS Safari)
-        setTimeout(() => {
-            if (!document.hidden) {
-                window.open(blobUrl, '_blank');
-            }
-        }, 100);
-        
-        // Cleanup
-        setTimeout(() => {
+        if (isMobile) {
+            // Mobile: Just open in new tab (iOS Safari compatible)
+            window.open(blobUrl, '_blank');
+        } else {
+            // Desktop: Try download with fallback
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(blobUrl);
-        }, 1000);
+        }
+        
+        // Cleanup after delay
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
     }
 
     // Generate alternate quote (e.g., without LEDs)
