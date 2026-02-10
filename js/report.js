@@ -243,10 +243,11 @@ class ReportGenerator {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         if (isMobile) {
-            // Mobile: Just open in new tab (iOS Safari compatible)
+            // Mobile: Alert user of filename, then open in new tab
+            alert(`Opening PDF: ${filename}\n\nNote: iOS will show "Unknown.pdf" - you can rename it after saving.`);
             window.open(blobUrl, '_blank');
         } else {
-            // Desktop: Try download with fallback
+            // Desktop: Try download with proper filename
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;

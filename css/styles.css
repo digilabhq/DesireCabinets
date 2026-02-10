@@ -25,21 +25,21 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 4px 20px 20px;
 }
 
 /* Header */
 .app-header {
     background: var(--white);
     border-bottom: 3px solid var(--gold);
-    margin-bottom: 30px;
+    margin-bottom: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .header-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 8px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,7 +63,8 @@ body {
 .new-quote-container {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    margin-top: 4px;
 }
 
 /* Room Tabs */
@@ -488,12 +489,13 @@ textarea {
     /* Header - just logo, centered */
     .app-header {
         position: relative;
+        margin-bottom: 4px;
     }
 
     .header-content {
         flex-direction: column;
         gap: 0;
-        padding: 8px;
+        padding: 4px 8px;
         text-align: center;
     }
 
@@ -505,7 +507,8 @@ textarea {
     /* New Quote button - full width on mobile */
     .new-quote-container {
         justify-content: stretch;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        margin-top: 4px;
     }
 
     .new-quote-container .btn {
@@ -516,7 +519,7 @@ textarea {
 
     /* Main container - stack vertically */
     .container {
-        padding: 10px;
+        padding: 4px 10px 10px;
     }
 
     /* Force vertical stacking on mobile */
