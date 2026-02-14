@@ -1,6 +1,6 @@
 // Service Worker for Desire Cabinets Estimator PWA
 
-const CACHE_NAME = 'desire-estimator-v11-ultra-tight-padding';
+const CACHE_NAME = 'desire-estimator-v12-new-icon';
 const urlsToCache = [
   '/DesireCabinets/',
   '/DesireCabinets/index.html',
@@ -11,6 +11,7 @@ const urlsToCache = [
   '/DesireCabinets/js/report.js',
   '/DesireCabinets/js/app.js',
   '/DesireCabinets/images/logo.jpg',
+  '/DesireCabinets/images/icon.jpg',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
 
